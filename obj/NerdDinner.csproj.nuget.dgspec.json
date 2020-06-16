@@ -1,0 +1,89 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/amit/Desktop/DOTNET/nerddinner1/NerdDinner/NerdDinner.csproj": {}
+  },
+  "projects": {
+    "/home/amit/Desktop/DOTNET/nerddinner1/NerdDinner/NerdDinner.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/amit/Desktop/DOTNET/nerddinner1/NerdDinner/NerdDinner.csproj",
+        "projectName": "NerdDinner",
+        "projectPath": "/home/amit/Desktop/DOTNET/nerddinner1/NerdDinner/NerdDinner.csproj",
+        "packagesPath": "/home/amit/.nuget/packages/",
+        "outputPath": "/home/amit/Desktop/DOTNET/nerddinner1/NerdDinner/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/amit/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "GoogleMaps.LocationServices": {
+              "target": "Package",
+              "version": "[1.2.0.5, )"
+            },
+            "Microsoft.AspNetCore.Session": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.1.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[3.1.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[3.1.5, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[3.1.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NerdDinner</title>
+    <!--script type='text/javascript'
+            src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=Am7TDe5Dy_xeTTToBjpYoamp3nCAfIsGxC866yTJCqBEVWI7hXHG2HAnI9Kj2iEs'
+            async defer></script-->
+
+    <script type='text/javascript'>
+        var model = JSON.parse('@Html.Raw(Json.Serialize(Model))');
+        var map;
+        var loc;
+        var lat;
+        var long;
+        var pushpin;
+        var locationArray = new Array();
+        function GetMap() {
+        map = new Microsoft.Maps.Map('#myMap', {
+            center: new Microsoft.Maps.Location(28.644800, 77.216721),
+            zoom: 13
+        });
+        infobox = new Microsoft.Maps.Infobox(map.getCenter(), {
+                visible: false
+        });
+            infobox.setMap(map);
+            if (model != null) {
+                if (typeof (model.length) === "undefined") {
+                    lat = model.latitude;
+                    long = model.longitude;
+                    loc = new Microsoft.Maps.Location(model.latitude,
+                        model.longitude);
+                    var pin = new Microsoft.Maps.Pushpin(loc, {
+                        color: 'red'
+                    });
+                    pin.metadata = {
+                        title: model.title,
+                        description: model.description,
+                        address: model.address
+                    };
+                    Microsoft.Maps.Events.addHandler(pin, 'click', pushpinClicked);
+                    map.entities.push(pin);
+
+                }
+                else {
+                    for (var i = 0; i < model.length; i++) {
+                        if (model[i].latitude == 0) { continue; }
+                        loc = new Microsoft.Maps.Location(model[i].latitude,
+                            model[i].longitude);
+                        var pin = new Microsoft.Maps.Pushpin(loc, {
+                            color: 'red'
+                        });
+                        pin.metadata = {
+                            title: model[i].title,
+                            description: model[i].description,
+                            address: model[i].address
+                        };
+                        Microsoft.Maps.Events.addHandler(pin, 'click', pushpinClicked);
+                        map.entities.push(pin);
+                        lat = model[i].latitude;
+                        long = model[i].longitude;
+                    }
+                }
+                // put an empty pin
+                loc = new Microsoft.Maps.Location(28.644800, 77.216721);
+                var pin = new Microsoft.Maps.Pushpin(loc, {
+                    color: 'white'
+                });
+                map.entities.push(pin);
+
+                map.setView({
+                    center: new Microsoft.Maps.Location(lat, long),
+                    zoom: 10
+                });
+            }
+        Microsoft.Maps.loadModule('Microsoft.Maps.AutoSuggest', function () {
+                var manager = new Microsoft.Maps.AutosuggestManager({ map: map });
+                manager.attachAutosuggest('#address', '#addressmain', selectedSuggestion);
+        });
+        Microsoft.Maps.loadModule('Microsoft.Maps.AutoSuggest', function () {
+                var manager = new Microsoft.Maps.AutosuggestManager({ map: map });
+            manager.attachAutosuggest('#address1', '#addressmain1', drawPolygon);
+            });
+
+        }
+
+        function selectedSuggestion(result) {
+            //Remove previously selected suggestions from the map.
+            map.entities.clear();
+
+            //Show the suggestion as a pushpin and center map over it.
+            var pin = new Microsoft.Maps.Pushpin(result.location);
+            map.entities.push(pin);
+            map.setView({ bounds: result.bestView });
+            document.getElementById('country').value = result.address.countryRegion || '';
+            document.getElementById('lat').value = result.location.latitude || '';
+            document.getElementById('long').value = result.location.longitude || '';
+        }
+        function drawPolygon(result) {
+            map.entities.pop();
+            //Show the suggestion as a pushpin and center map over it.
+            var pin = new Microsoft.Maps.Pushpin(result.location);
+            Microsoft.Maps.loadModule('Microsoft.Maps.SpatialMath', function () {
+                var locations = Microsoft.Maps.SpatialMath.getRegularPolygon(result.location, 7, 6, Microsoft.Maps.SpatialMath.DistanceUnits.Miles);
+                var polygon = new Microsoft.Maps.Polygon(locations, null);
+                map.entities.push(polygon);
+            });
+            
+        }
+        
+        function pushpinClicked(e) {
+                infobox.setOptions({
+                    location: e.target.getLocation(),
+                    address: e.target.metadata.address,
+                    title: e.target.metadata.title,
+                    description: e.target.metadata.description,
+                    visible: true
+                });
+
+        }
+    </script>
+    <environment include="Development">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+    @{
+
+        var userId = @ViewData["session"];
+        if (userId == null)
+        {
+            // Context.Response.Redirect("/Account");
+
+        }
+    }
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @if (@userId != null)
+                {
+                    <a asp-area="" asp-controller="Dinner" asp-action="Logged" class="navbar-brand">NerdDinner</a>
+                }
+                else
+                {
+                    <a asp-area="" asp-controller="Dinner" asp-action="Index" class="navbar-brand">NerdDinner</a>
+                }
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    @if (@userId != null)
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-user"></span>
+                                <strong>@userId</strong>
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-area="" asp-controller="Userdetails" asp-action="index"><span class="glyphicon glyphicon-log-in"></span> My Profile</a></li>
+                                <li><a asp-area="" asp-controller="Account" asp-action="Logout"><span class="glyphicon glyphicon-log-in"></span>Logout</a></li>
+                            </ul>
+                        </li>
+                        @*<li><a asp-area="" asp-controller="Account" asp-action="index"><span class="glyphicon glyphicon-user"></span> @userId</a></li>*@
+                    }
+                    else
+                    {
+                        <li><a asp-area="" asp-controller="Account" asp-action="index"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                        <li><a asp-area="" asp-controller="Account" asp-action="Register"><span class="glyphicon glyphicon-log-in"></span> Register</a></li>
+
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+    </div>
+    <environment include="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"></script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+@RenderSection("Scripts", required: false)
+</body>
+</html>
